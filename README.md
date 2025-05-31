@@ -1,50 +1,17 @@
-# Ewr-ShAn-Bot
+<img src="https://i.imgur.com/zAotPuJ.jpeg" alt="banner">
+<h1 align="center"><img src="./dashboard/images/logo-non-bg.png" width="22px"> TANVIR-𝗕𝗢𝗧 - 𝗠𝗘𝗦𝗦𝗘𝗡𝗚𝗘𝗥 𝗖𝗛𝗔𝗧 𝗕𝗢𝗧</h1>
+<!-- Github README -->
 
-## Original Source Code
-- **GitHub Repository:** [https://github.com/ntkhang03/Goat-Bot-V2](https://github.com/ntkhang03/Goat-Bot-V2)
+<p align="center"><img src="https://img.shields.io/badge/I Am TANVIR %20BANGLADESHI- NOOB PROGRAMMER-green?colorA=%23ff0000&colorB=%23017e40&style=flat-square">
 
-## Project Updates
-This version includes fixes by Ew'r ShAn's to the FCA (Facebook Chat API) implementation.
+</i></b></h3>
+<h3 align="center">
+  <img src="https://emoji.discord.st/emojis/768b108d-274f-4f44-a634-8477b16efce7.gif" width="25">
+  &nbsp; ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ TANVIR ʙᴏᴛ &nbsp;
+  <img src="https://emoji.discord.st/emojis/768b108d-274f-4f44-a634-8477b16efce7.gif" width="25">
+</h3>
+<img align="center" alt="line" src="https://github.com/DalpatRathore/dalpatrathore/blob/main/assets/images/line-1.svg">
 
-### Key Modifications
-- Updated files:
-  1. `bot/login/login.js`
-  2. `package.json`
-  3. `package-lock.json`
 
-### Recommendation 
-- Use updated files
-- create a blank `account.dev.txt` file
-- use node 20
 
-## Custom Facebook API Implementation
-A custom Facebook API has been used to fix and improve the bot's functionality.
-
-## Installation
-1. Clone the original repository
-2. Replace the specified files with the updated versions
-3. Follow my original installation instructions
-
-## Troubleshooting
-For any issues or support:
-- **Telegram:** [Telegram](https://telegram.me/si_rana252)
-- **Facebook:** [Facebook](https://www.facebook.com/sirana252)
-- **Instagram:** [Instagram](https://www.instagram.com/sirana252)
-
-## Additional Resources
-- **C3C Files Download:** [Download Here](https://drive.google.com/file/d/1-MWoTyqES-V4H-QAIQDiC34-XMKju8hA/view?usp=drivesdk)
-
-### Notes
-- Ensure you extract cookies from the C3C files
-- Place extracted cookies in `account.txt`
-- Follow the bot setup instructions carefully
-
-### Error Solve
-- If you facing cookies missing or `account.dev.txt` file missing error, than put your cookies in `account.txt` and make blank file `account.dev.txt`
-- If you facing problem with npm than update you `package.json` and `package-lock.json` from this repo and use node version 20 with npm version 10
-
-## Disclaimer
-This is a modified version of the original Ewr-ShAn-Bot. Use at your own discretion.
-
-## Support
-For any technical support or inquiries, please contact the maintainer through the provided social media links.
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%23F70B10&size=27&lines=𝙸+𝙰𝙼+𝙸𝙽𝙽𝙾𝙲𝙴𝙽𝚃+𝙱𝙾𝚈;+𝙸𝚃'𝚜+𝙽𝙾𝚃+𝙹𝚄𝚂𝚃+𝙰+𝙽𝙰𝙼𝙴+𝙱𝚁𝙾;𝙸𝚃'R+A+𝙱𝚁𝙰𝙽𝙳;𝚃𝙷𝙰𝙽𝙺+𝚈𝙾𝚄+𝙴𝚅𝙴𝚁𝚈𝙾𝙽𝙴;𝙻𝙾𝚅e+𝚄+𝙰𝙻𝙻+𝙵𝚁𝙸𝙴𝙽𝙳𝚂)](https://git.io/typing-svg)
