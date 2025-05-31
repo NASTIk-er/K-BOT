@@ -2,14 +2,14 @@ module.exports = {
 	config: {
 		name: "all",
 		version: "1.2",
-		author: "𝗦𝗵𝗔𝗻",
+		author: "NTKhang",
 		countDown: 5,
 		role: 1,
 		description: {
 			vi: "Tag tất cả thành viên trong nhóm chat của bạn",
 			en: "Tag all members in your group chat"
 		},
-		category: "𝗕𝗢𝗫 𝗖𝗛𝗔𝗧",
+		category: "box chat",
 		guide: {
 			vi: "   {pn} [nội dung | để trống]",
 			en: "   {pn} [content | empty]"

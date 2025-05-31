@@ -1,108 +1,63 @@
-const axios = require("axios");
-const fs = require("fs-extra");
-const { createCanvas, loadImage } = require("canvas");
+const axios = require('axios');
+
+const baseApiUrl = async () => {
+  const base = await axios.get(
+    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
+  );
+  return base.data.api;
+};
 
 module.exports = {
-	config: {
-		name: "art",
-		version: "1.1",
-		author: "NTKhang",
-		countDown: 7,
-		role: 0,
-    shortDescription: "AI Anime art",
-    longDescription : "Archives will send you Image to Anime art Using Artificial Intelligence ",
-    
-		category: "box chat",
-    guide:{
-      en:"{pn} |{pn} 2 |{pn} 3"
+  config: {
+    name: "art",
+    version: "1.6.9",
+    author: "Nazrul",
+    role: 0,
+    description: "{pn} - Enhance your photos with artful transformations!",
+    category: "art",
+    countDown: 5,
+    guide: { 
+      en: "{pn} reply to an image"
     }
-    
-	},
+  },
+  onStart: async function ({ message, event, args, api }) {
+    try {
+      const cp = ["bal","zombie","anime","ghost", "watercolor", "sketch", "abstract", "cartoon","monster"];
+      const prompts = args[0] || cp[Math.floor(Math.random() * cp.length)];
 
-	onStart: async function ({ message, event, args }) {
+      const msg = await api.sendMessage("🎨 Processing your image, please wait...", event.threadID);
 
-    const isDisabled = false;
-    if (isDisabled) {
-      const replyMessage = ' AI Art command will back soon...\n\nReason:\nMain Server Crashed. I have no idea when Server Owner gonna fix Main server. so please wait...  \nI will send a notice to everyone when its available again 🙏\n\nContact Loid Butter For more info \FB :https://www.facebook.com/profile.php?id=100082741664058';
-      message.reply(replyMessage);
-      return;
-    }
+      let photoUrl = "";
 
-    const { getPrefix } = global.utils;
-       const p = getPrefix(event.threadID);
-    const approvedIds = JSON.parse(fs.readFileSync(`${__dirname}/assist_json/approved_main.json`));
-    const bypassIds = JSON.parse(fs.readFileSync(`${__dirname}/assist_json/bypass_id.json`));
-    const bypassUid = event.senderID;
-    if (bypassIds.includes(bypassUid)) {
-      console.log(`User ${bypassUid} is in bypass list. Skipping the NSFW approval check.`);
-    } else {
-      const threadID = event.threadID;
-      if (!approvedIds.includes(threadID)) {
-        const msgSend = message.reply(`cmd 'Art' is locked 🔒...\n Reason : Bot's main cmds \nyou need permission to use main cmds.\n\nType ${p}requestMain to send a request to admin`);
-        setTimeout(async () => {
-          message.unsend((await msgSend).messageID);
-        }, 40000);
+      if (event.type === "message_reply" && event.messageReply?.attachments?.length > 0) {
+        photoUrl = event.messageReply.attachments[0].url;
+      } else if (args.length > 0) {
+        photoUrl = args.join(' ');
+      }
+
+      if (!photoUrl) {
+        return api.sendMessage("🔰 Please reply to an image or provide a URL!", event.threadID, event.messageID);
+      }
+
+      const response = await axios.get(`${await baseApiUrl()}/art2?url=${encodeURIComponent(photoUrl)}&prompt=${encodeURIComponent(prompts)}`);
+
+      if (!response.data || !response.data.imageUrl) {
+        await api.sendMessage("⚠ Failed to return a valid image URL. Please try again.", event.threadID, event.messageID);
         return;
       }
+
+      const imageUrl = response.data.imageUrl;
+      await api.unsendMessage(msg.messageID);
+
+      const imageStream = await axios.get(imageUrl, { responseType: 'stream' });
+
+      await api.sendMessage({ 
+        body: `Here's your artful image! 🎨`, 
+        attachment: imageStream.data 
+      }, event.threadID, event.messageID);
+
+    } catch (error) {
+      await api.sendMessage(`Error: ${error.message}`, event.threadID, event.messageID);
     }
-    
-
-		let imageUrlInput;
-		let type;
-		if (["photo", "sticker"].includes(event.messageReply?.attachments[0]?.type)) {
-			imageUrlInput = event.messageReply.attachments[0].url;
-			type = isNaN(args[0]) ? 1 : Number(args[0]);
-		} else if (args[0]?.match(/(https?:\/\/.*\.(?:png|jpg|jpeg))/g)) {
-			imageUrlInput = args[0];
-			type = isNaN(args[1]) ? 1 : Number(args[1]);
-		} else {
-			return message.reply("⚠️ Invalid image URL, please reply with an image or provide an image URL");
-		}
-
-		let res;
-		try {
-			res = await axios.get("https://goatbotserver.onrender.com/taoanhdep/art", {
-				params: {
-					image: imageUrlInput,
-					type
-				}
-			});
-			const imageBuffer = await axios.get(res.data.data.effect_img, { responseType: "arraybuffer" });
-			const watermarkBuffer = await axios.get("https://i.ibb.co/4SWk7F2/Picsart-23-05-14-22-56-04-275.png", { responseType: "arraybuffer" });
-
-			const canvas = createCanvas();
-			const ctx = canvas.getContext("2d");
-
-			const originalImage = await loadImage(imageBuffer.data);
-			const watermarkImage = await loadImage(watermarkBuffer.data);
-
-			canvas.width = originalImage.width;
-			canvas.height = originalImage.height;
-
-			ctx.drawImage(originalImage, 0, 0);
-
-			// Draw watermark
-			const watermarkWidth = Math.floor(originalImage.width / 4);
-			const watermarkHeight = Math.floor(watermarkImage.height * (watermarkWidth / watermarkImage.width));
-			ctx.globalAlpha = 0.70;
-			ctx.drawImage(watermarkImage, canvas.width - watermarkWidth, canvas.height - watermarkHeight, watermarkWidth, watermarkHeight);
-			ctx.globalAlpha = 1;
-
-			const editedImage = canvas.toBuffer();
-
-			await fs.writeFile("imageArt.png", editedImage);
-
-			// Send the image
-			await message.reply({
-        body: "Anime AI Art generated✨\n\nUse FB Lite for save the image✅",
-				attachment: fs.createReadStream("imageArt.png")
-			});
-
-			// Remove temporary image file
-			await fs.remove("imageArt.png");
-		} catch (error) {
-			console.error(error);
-			message.reply("❌ An error occurred while processing the image.");
-		}
-	}
+  }
 };

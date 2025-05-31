@@ -16,15 +16,15 @@ config: {
   onStart: async function ({ api, event }) {
   try {
     const ownerInfo = {
-      name: '𝐍𝐈𝐑𝐎𝐁',
-      gender: 'MaLe',
-      age: '18+',
-      height: '𝐉𝐀𝐍𝐈 𝐍𝐀',
-      choise: '',
-      nick: '😒'
+      name: '𝐓𝐀𝐍𝐕𝐈𝐑 𝐀𝐇𝐌𝐄𝐃 🍒',
+      gender: '𝐌𝐀𝐋𝐄',
+      age: '19+',
+      height: '5.6',
+      choise: '𝐍𝐓𝐆',
+      nick: '𝐃𝐈𝐏𝐓𝐎 🏴‍☠️'
     };
 
-    const bold = 'https://files.catbox.moe/a86iqb.mp4'; // Replace with your Google Drive videoid link https://drive.google.com/uc?export=download&id=here put your video id
+    const bold = 'https://files.catbox.moe/o10gpe.mp4'; // Replace with your Google Drive videoid link https://drive.google.com/uc?export=download&id=here put your video id
 
     const tmpFolderPath = path.join(__dirname, 'tmp');
 
@@ -38,7 +38,7 @@ config: {
     fs.writeFileSync(videoPath, Buffer.from(videoResponse.data, 'binary'));
 
     const response = ` 
-╭[ .  ]•〆 NIROB 〆 ]  ─⦿
+╭[ .  ]•𝐓𝐀𝐍𝐕𝐈𝐑 𝐁𝐎𝐓•]  ─⦿
 ╭────────────◊
 ├‣ 𝐁𝐨𝐭 & 𝐎𝐰𝐧𝐞𝐫 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐭𝐢𝐨𝐧 
 ├‣ 𝐍𝐚𝐦𝐞: ${ownerInfo.name}
@@ -56,7 +56,7 @@ config: {
     }, event.threadID, event.messageID);
 
     if (event.body.toLowerCase().includes('ownerinfo')) {
-      api.setMessageReaction('🖤', event.messageID, (err) => {}, true);
+      api.setMessageReaction('🚀', event.messageID, (err) => {}, true);
     }
   } catch (error) {
     console.error('Error in ownerinfo command:', error);

@@ -1,16 +1,16 @@
 module.exports = {
 	config: {
 		name: "onlyadminbox",
-		aliases: ["admchatonly", "adboxonly", "adminboxonly"],
+		aliases: ["onlyadbox", "adboxonly", "adminboxonly"],
 		version: "1.3",
-		author: "ShAn",
+		author: "NTKhang",
 		countDown: 5,
-		role: 2,
+		role: 1,
 		description: {
 			vi: "bật/tắt chế độ chỉ quản trị của viên nhóm mới có thể sử dụng bot",
 			en: "turn on/off only admin box can use bot"
 		},
-		category: "𝗕𝗢𝗫 𝗖𝗛𝗔𝗧",
+		category: "box chat",
 		guide: {
 			vi: "   {pn} [on | off]: bật/tắt chế độ chỉ quản trị viên nhóm mới có thể sử dụng bot"
 				+ "\n   {pn} noti [on | off]: bật/tắt thông báo khi người dùng không phải là quản trị viên nhóm sử dụng bot",

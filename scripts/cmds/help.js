@@ -3,13 +3,13 @@ const axios = require("axios");
 const path = require("path");
 const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
-const doNotDelete = "[NIROB]"; 
+const doNotDelete = "[𝗞 𝗔 𝗠 𝗨 ]"; 
 
 module.exports = {
   config: {
     name: "help",
     version: "1.17",
-    author: "Nirob",
+    author: "xos Eren",
     countDown: 5,
     role: 0,
     shortDescription: {
@@ -34,7 +34,7 @@ module.exports = {
       const categories = {};
       let msg = "╭───────❁";
 
-      msg += `\n│𝐍𝐈𝐑𝐎𝐁 𝗛𝗘𝗟𝗣 𝗟𝗜𝗦𝗧\n╰────────────❁`; 
+      msg += `\n│𝚃𝙰𝙽𝚅𝙸𝚁-𝙱𝙾𝚃 𝙷𝙴𝙻𝙿 𝙻𝙸𝚂𝚃\n╰────────────❁`; 
 
       for (const [name, value] of commands) {
         if (value.config.role > 1 && role < value.config.role) continue;
@@ -60,11 +60,11 @@ module.exports = {
       });
 
       const totalCommands = commands.size;
-      msg += `\n\n╭─────✰[𝗘𝗡𝗝𝗢𝗬]\n│>𝗧𝗢𝗧𝗔𝗟 𝗖𝗠𝗗𝗦: [${totalCommands}].\n│𝗧𝗬𝗣𝗘𝖳:[ ${prefix}𝗛𝗘𝗟𝗣 \n│.]\n╰────────────✰`;
+      msg += `\n\n╭─────✰[𝙴𝙽𝙹𝙾𝚈]\n│>𝚃𝙾𝚃𝙰𝙻 𝙲𝙼𝙳: [${totalCommands}].\n│𝚃𝚈𝙿𝙴:[ ${prefix}𝙷𝙴𝙻𝙿 \n│.]\n╰────────────✰`;
       msg += ``;
-      msg += `\n╭─────✰\n│ ╣[𝐍𝐈𝐑𝐎𝐁 ꨄ︎]╠\n╰────────────✰`; 
+      msg += `\n╭─────✰\n│ ╣𝚃𝙰𝙽𝚅𝙸𝚁-𝙱𝙾𝚃╠\n╰────────────✰`; 
 
-const helpListImages = [ "https://files.catbox.moe/xhw0uk.mp4" ];
+const helpListImages = [ "https://i.ibb.co/TBv1QsBN/image.jpg" ];
 
 
       const helpListImage = helpListImages[Math.floor(Math.random() * helpListImages.length)];
@@ -78,7 +78,7 @@ const helpListImages = [ "https://files.catbox.moe/xhw0uk.mp4" ];
       const command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
       if (!command) {
-        await message.reply(`Command "${commandName}" not found.`);
+        await message.reply(`𝙲𝚘𝚖𝚖𝚊𝚗𝚍 "${commandName}" 𝚗𝚘𝚝 𝚏𝚘𝚞𝚗𝚍.`);
       } else {
         const configCommand = command.config;
         const roleText = roleTextToString(configCommand.role);
@@ -90,17 +90,17 @@ const helpListImages = [ "https://files.catbox.moe/xhw0uk.mp4" ];
         const usage = guideBody.replace(/{p}/g, prefix).replace(/{n}/g, configCommand.name);
 
         const response = `
-  ╭───⊙
-  │ 🔶 ${configCommand.name}
-  ├── INFO
-  │ 📝 𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻: ${longDescription}
-  │ 👑 𝗔𝘂𝘁𝗵𝗼𝗿: ${author}
-  │ ⚙ 𝗚𝘂𝗶𝗱𝗲: ${usage}
-  ├── USAGE
-  │ 🔯 𝗩𝗲𝗿𝘀𝗶𝗼𝗻: ${configCommand.version || "1.0"}
-  │ ♻𝗥𝗼𝗹𝗲: ${roleText}
-  ╰────────────⊙`;
-
+╔═════════════════════╗
+║ 🔹 𝙲𝙾𝙼𝙼𝙰𝙽𝙳: 🔶 ${configCommand.name}
+╠═══════════════════════╣
+║ 📌 𝙳𝚎𝚜𝚌𝚛𝚒𝚙𝚝𝚒𝚘𝚗: ${longDescription}
+║ 🆔 𝙰𝚕𝚒𝚊𝚜𝚎𝚜: ${configCommand.aliases}
+║ 📎 𝚅𝚎𝚛𝚜𝚒𝚘𝚗:  ${configCommand.version || "1.0"}
+║ 👤 𝚁𝚘𝚕𝚎: ${roleText}
+║ ⏳ 𝙲𝚘𝚘𝚕𝚍𝚘𝚠𝚗: ${configCommand.countDown}
+║ 👨‍💻 𝙰𝚞𝚝𝚑𝚘𝚛:  ${author}
+║ 📖 𝚄𝚜𝚊𝚐𝚎: ${usage}
+╚═══════════════════════╝`;
         await message.reply(response);
       }
     }
@@ -118,5 +118,4 @@ function roleTextToString(roleText) {
     default:
       return "Unknown role";
   }
-        }
-      
+}
