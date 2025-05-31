@@ -1,81 +1,83 @@
-const axios = require("axios");
-const fs = require("fs");
-
-const baseApiUrl = async () => {
-  const base = await axios.get(
-    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
-  );
-  return base.data.api;
-};
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
   config: {
-    name: "song",
-    version: "1.0.0",
-    aliases: ["mp3", "audio"],
-    author: "dipto",
-    countDown: 5,
-    role: 0,
-    description: {
-      en: "Download audio (MP3) from YouTube",
-    },
-    category: "media",
-    guide: {
-      en: "  {pn} [<video name>|<video link>]: use to download audio from YouTube."
-          + "\n   Example:"
-          + "\n {pn} despacito"
-          + "\n {pn} https://youtu.be/abc123xyz",
-    },
+    name: 'song',
+    author: 'Nyx',
+    usePrefix: false,
+    category: 'Youtube Song Downloader'
   },
-
-  onStart: async ({ api, args, event }) => {
-  api.setMessageReaction("⏳", event.messageID, (err) => {}, true);
-    if (args.length === 0) {
-      return api.sendMessage("❌ Please provide a YouTube video name or link.", event.threadID, event.messageID);
-    }
-
-    const checkurl =
-      /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/;
-    
-    let videoID;
-    if (checkurl.test(args[0])) {
-      const match = args[0].match(checkurl);
-      videoID = match ? match[1] : null;
-    } else {
-      const searchQuery = args.join(" ");
-      try {
-        const searchResults = await axios.get(`${await baseApiUrl()}/ytFullSearch?songName=${searchQuery}`);
-        if (!searchResults.data.length) {
-          return api.sendMessage(`⭕ No search results found for: ${searchQuery}`, event.threadID, event.messageID);
-        }
-        videoID = searchResults.data[0].id;
-      } catch (error) {
-        return api.sendMessage("❌ An error occurred while searching.", event.threadID, event.messageID);
-      }
-    }
-
+  onStart: async ({ event, api, args, message }) => {
     try {
-      const format = "mp3";
-      const path = `yt_audio_${videoID}.${format}`;
-      const { data: { title, downloadLink, quality } } = await axios.get(`${await baseApiUrl()}/ytDl3?link=${videoID}&format=${format}&quality=3`);
+      const query = args.join(' ');
+      if (!query) return message.reply('Please provide a search query!');
       
-      await api.sendMessage({
-        body: `🎵 Title: ${title}\n🎧 Quality: ${quality}`,
-        attachment: await downloadFile(downloadLink, path),
-      }, event.threadID, () => fs.unlinkSync(path), event.messageID);
-    } catch (e) {
-      console.error(e);
-      return api.sendMessage("❌ Failed to download the audio. Please try again later.", event.threadID, event.messageID);
-    }
-  },
-};
+      const searchResponse = await axios.get(`https://www.x-noobs-apis.42web.io/mostakim/ytSearch?search=${encodeURIComponent(query)}`);
+      api.setMessageReaction("⏳", event.messageID, () => {}, true);
 
-async function downloadFile(url, pathName) {
-  try {
-    const response = (await axios.get(url, { responseType: "arraybuffer" })).data;
-    fs.writeFileSync(pathName, Buffer.from(response));
-    return fs.createReadStream(pathName);
-  } catch (err) {
-    throw err;
+      const parseDuration = (timestamp) => {
+        const parts = timestamp.split(':').map(part => parseInt(part));
+        let seconds = 0;
+
+        if (parts.length === 3) {
+          seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        } else if (parts.length === 2) {
+          seconds = parts[0] * 60 + parts[1];
+        }
+
+        return seconds;
+      };
+
+      const filteredVideos = searchResponse.data.filter(video => {
+        try {
+          const totalSeconds = parseDuration(video.timestamp);
+          return totalSeconds < 600;
+        } catch {
+          return false;
+        }
+      });
+
+      if (filteredVideos.length === 0) {
+        return message.reply('No short videos found (under 10 minutes)!');
+      }
+
+      const selectedVideo = filteredVideos[0];
+      const tempFilePath = path.join(__dirname, 'temp_audio.m4a');
+      const apiResponse = await axios.get(`https://www.x-noobs-apis.42web.io/m/sing?url=${selectedVideo.url}`);
+      
+      if (!apiResponse.data.url) {
+        throw new Error('No audio URL found in response');
+      }
+
+      const writer = fs.createWriteStream(tempFilePath);
+      const audioResponse = await axios({
+        url: apiResponse.data.url,
+        method: 'GET',
+        responseType: 'stream'
+      });
+
+      audioResponse.data.pipe(writer);
+      
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+
+      api.setMessageReaction("✅", event.messageID, () => {}, true);
+
+      await message.reply({
+        body: `🎧 Now playing: ${selectedVideo.title}\nDuration: ${selectedVideo.timestamp}`,
+        attachment: fs.createReadStream(tempFilePath)
+      });
+
+      fs.unlink(tempFilePath, (err) => {
+        if (err) message.reply(`Error deleting temp file: ${err.message}`);
+      });
+
+    } catch (error) {
+      message.reply(`Error: ${error.message}`);
+    }
   }
-	    }
+};

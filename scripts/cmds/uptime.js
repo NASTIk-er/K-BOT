@@ -1,91 +1,117 @@
 const os = require("os");
-const fs = require("fs-extra");
-const axios = require("axios");
-
-const startTime = new Date();
+const { createCanvas, loadImage } = require("canvas");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
+const moment = require("moment-timezone");
+const fs = require("fs");
 
 module.exports = {
   config: {
     name: "uptime",
-    aliases: ["up"],
-    author: "NIROB",
-    countDown: 0,
+    aliases: ["upt", "up"],
+    version: "1.5.2",
+    author: "XOS Ayan",
     role: 0,
-    category: "system",
-    longDescription: {
-      en: "Get System Information",
+    noPrefix: true,
+    shortDescription: {
+      en: "Check bot uptime with image."
     },
-  },
-
-  onStart: async function ({ api, event, args, threadsData, usersData }) {
-    try {
-      const uptimeInSeconds = (new Date() - startTime) / 1000;
-      const days = Math.floor(uptimeInSeconds / (3600 * 24));
-      const hours = Math.floor((uptimeInSeconds % (3600 * 24)) / 3600);
-      const minutes = Math.floor((uptimeInSeconds % 3600) / 60);
-      const secondsLeft = Math.floor(uptimeInSeconds % 60);
-      const uptimeFormatted = `${days}d ${hours}h ${minutes}m ${secondsLeft}s`;
-
-      const cpuUsage = os.cpus().reduce((acc, curr) => acc + curr.times.user, 0) / os.cpus().length;
-      const totalMemoryGB = os.totalmem() / 1024 ** 3;
-      const freeMemoryGB = os.freemem() / 1024 ** 3;
-      const usedMemoryGB = totalMemoryGB - freeMemoryGB;
-
-      const allUsers = await usersData.getAll();
-      const allThreads = await threadsData.getAll();
-      const currentDate = new Date();
-      const date = currentDate.toLocaleDateString("en-US");
-      const time = currentDate.toLocaleTimeString("en-US", {
-        timeZone: "Asia/Kolkata",
-        hour12: true,
-      });
-
-      const timeStart = Date.now();
-      await api.sendMessage("🔎 Checking system info...", event.threadID);
-      const ping = Date.now() - timeStart;
-
-      let pingStatus = "⛔ Bad System";
-      if (ping < 1000) pingStatus = "✅ Smooth System";
-
-      const systemInfo = `♡   ∩_∩
-（„• ֊ •„)♡
-╭─∪∪────────────⟡
-│ 𝗨𝗣𝗧𝗜𝗠𝗘 𝗜𝗡𝗙𝗢
-├───────────────⟡
-│ ⏰ Runtime: ${uptimeFormatted}
-│ OS: ${os.type()} ${os.arch()}
-│ CPU: ${os.cpus()[0].model}
-│ Storage: ${usedMemoryGB.toFixed(2)} GB / ${totalMemoryGB.toFixed(2)} GB
-│ CPU Usage: ${cpuUsage.toFixed(1)}%
-│ RAM: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)} MB
-├───────────────⟡
-│ 📆 Date: ${date}
-│ ⏱️ Time: ${time}
-│ 👥 Users: ${allUsers.length}
-│ 🧵 Threads: ${allThreads.length}
-│ 📡 Ping: ${ping}ms
-│ Status: ${pingStatus}
-╰───────────────⟡`;
-
-      // Media from catbox (video)
-      let attachment = null;
-      const mediaUrl = "https://files.catbox.moe/9nx2wx.mp4";
-
-      if (mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".png") || mediaUrl.endsWith(".mp4")) {
-        const response = await axios.get(mediaUrl, { responseType: "stream" });
-        attachment = response.data;
-      }
-
-      api.sendMessage(
-        {
-          body: systemInfo,
-          attachment,
-        },
-        event.threadID,
-      );
-    } catch (error) {
-      console.error("System info error:", error);
-      api.sendMessage("⚠️ Could not retrieve system information.", event.threadID);
+    longDescription: {
+      en: "Generates an image with uptime info and sends system stats as text."
+    },
+    category: "system",
+    guide: {
+      en: "Just type 'uptime', 'upt', or 'up'"
     }
   },
+
+  onStart: async function () {},
+
+  onChat: async function ({ message, event, usersData, threadsData }) {
+    const prefix = global.GoatBot.config.prefix;
+    const body = (event.body || "").toLowerCase().trim();
+    const triggers = [`uptime`, `upt`, `up`, `${prefix}uptime`, `${prefix}upt`, `${prefix}up`];
+    if (!triggers.includes(body)) return;
+
+    try {
+      const uptimeSec = process.uptime();
+      const days = Math.floor(uptimeSec / 86400);
+      const hours = Math.floor((uptimeSec % 86400) / 3600);
+      const minutes = Math.floor((uptimeSec % 3600) / 60);
+      const seconds = Math.floor(uptimeSec % 60);
+      const formattedUptime = `${days}/${hours}/${minutes}/${seconds}`;
+
+      const osType = os.type();
+      const osRelease = os.release();
+      const arch = os.arch();
+      const cpu = os.cpus()[0].model;
+      const totalMemMB = os.totalmem() / 1024 / 1024;
+      const freeMemMB = os.freemem() / 1024 / 1024;
+      const usedMemMB = totalMemMB - freeMemMB;
+      const loadAvg = os.loadavg()[0].toFixed(2);
+      const disk = await getDiskUsage();
+      const totalUsers = (await usersData.getAll()).length;
+      const totalThreads = (await threadsData.getAll()).length;
+      const currentTime = moment.tz("Asia/Dhaka").format("DD/MM/YYYY || HH:mm:ss");
+
+      // Create image
+      const background = await loadImage("https://i.imgur.com/ACQ8wF7.jpeg");
+      const canvas = createCanvas(1000, 500);
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(background, 0, 0, 1000, 500);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 36px Arial";
+      ctx.textAlign = "center";
+      ctx.shadowColor = "rgba(0,0,0,0.5)";
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 5;
+
+      // Custom uptime text
+      ctx.fillText("SYSTEM UPTIME", 500, 390);
+      ctx.fillText("──────────────", 500, 430);
+      ctx.fillText(`BOT UPTIME: ${days}D ${hours}H ${minutes}M ${seconds}S`, 500, 470);
+
+      const imagePath = `${__dirname}/uptime_img.png`;
+      fs.writeFileSync(imagePath, canvas.toBuffer());
+
+      await message.reply({
+        body: `𝐒𝐭𝐚𝐭𝐮𝐬
+----------------------
+⚙ 𝐒𝐲𝐬𝐭𝐞𝐦 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐭𝐢𝐨𝐧:
+  𝐎𝐒: ${osType} ${osRelease}
+  𝐀𝐫𝐜𝐡: ${arch}
+  𝐂𝐏𝐔: ${cpu}
+  𝐋𝐨𝐚𝐝 𝐀𝐯𝐞𝐫𝐚𝐠𝐞: ${loadAvg}%
+----------------------
+💾 𝐌𝐞𝐦𝐨𝐫𝐲 𝐈𝐧𝐟𝐨:
+  𝐔𝐬𝐞𝐝: ${usedMemMB.toFixed(2)} MB / ${totalMemMB.toFixed(2)} MB
+----------------------
+📀 𝐃𝐢𝐬𝐤 𝐒𝐩𝐚𝐜𝐞:
+  𝐔𝐬𝐞𝐝: ${(disk.used / 1024 / 1024 / 1024).toFixed(2)} GB / ${(disk.total / 1024 / 1024 / 1024).toFixed(2)} GB
+----------------------
+🤖 𝐁𝐨𝐭 𝐔𝐩𝐭𝐢𝐦𝐞: ${days}D ${hours}H ${minutes}M ${seconds}S
+📊 𝐓𝐨𝐭𝐚𝐥 𝐔𝐬𝐞𝐫𝐬: ${totalUsers}
+💬 𝐓𝐨𝐭𝐚𝐥 𝐓𝐡𝐫𝐞𝐚𝐝𝐬: ${totalThreads}
+🕒 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐓𝐢𝐦𝐞: ${currentTime}
+----------------------`,
+        attachment: fs.createReadStream(imagePath)
+      });
+
+      fs.unlinkSync(imagePath);
+    } catch (e) {
+      console.error(e);
+      message.reply("❌ An error occurred while generating uptime.");
+    }
+  }
 };
+
+async function getDiskUsage() {
+  const { stdout } = await exec("df -k /");
+  const lines = stdout.split("\n");
+  const diskLine = lines[1].split(/\s+/);
+  const total = parseInt(diskLine[1]) * 1024;
+  const used = parseInt(diskLine[2]) * 1024;
+  return { total, used };
+}
