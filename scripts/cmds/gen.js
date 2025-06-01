@@ -64,7 +64,7 @@ module.exports = {
       }
 
       let id;
-      api.setMessageReaction("⏳", event.messageID, () => {}, true);
+      api.setMessageReaction("⏳", event.messageID, () => {}, false);
       const waitingMessage = await message.reply("✅ | Creating your Imagination...");
 
       const API = `https://www.api.vyturex.com/curios?prompt=${encodeURIComponent(prompt)}&modelType=${model}`;
@@ -73,10 +73,10 @@ module.exports = {
       await message.reply({
         attachment: imageStream,
       });
-      api.setMessageReaction("✅", event.messageID, () => {}, true);
+      api.setMessageReaction("✅", event.messageID, () => {}, false);
       await api.unsendMessage(waitingMessage.messageID);
     } catch (error) {
-      message.reply("Your prompt is blocked. Try again later with another prompt. [ Tor Mayre Chudi REDWAN/ MAHI  Othoba Sanam Er Permission Nicos? ]");
+      message.reply("Your prompt is blocked]");
     }
   },
 };
