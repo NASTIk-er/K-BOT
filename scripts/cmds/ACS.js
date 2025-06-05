@@ -20,8 +20,8 @@ module.exports = {
 		if (event.body && event.body.toLowerCase() === "acs") {
 			const mediaLinks = [
 				"https://files.catbox.moe/1jjx82.mp4",
-				"https://files.catbox.moe/1jjx82.mp4",
-				"https://files.catbox.moe/1jjx82.mp4",
+				"https://files.catbox.moe/4gxsv5.mp4",
+				"https://files.catbox.moe/rupc0c.mp4",
 				"https://files.catbox.moe/1jjx82.mp4",
 				"https://files.catbox.moe/1jjx82.mp4",
 				"https://files.catbox.moe/1jjx82.mp4",
