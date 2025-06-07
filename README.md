@@ -1,5 +1,5 @@
-<img src="https://i.imgur.com/aPzVbIC.jpeg" alt="banner">
-<h1 align="center"><img src="./dashboard/images/logo-non-bg.png" width="22px"> 𝗬𝗘𝗔𝗦𝗜𝗡-𝗕𝗢𝗧 - 𝗠𝗘𝗦𝗦𝗘𝗡𝗚𝗘𝗥 𝗖𝗛𝗔𝗧 𝗕𝗢𝗧</h1>
+<img src="https://i.imgur.com/aUwcXyZ.jpeg" alt="banner">
+<h1 align="center"><img src="./dashboard/images/logo-non-bg.png" width="22px"> 𝗧𝗔𝗡𝗩𝗜𝗥-𝗕𝗢𝗧 - 𝗠𝗘𝗦𝗦𝗘𝗡𝗚𝗘𝗥 𝗖𝗛𝗔𝗧 𝗕𝗢𝗧</h1>
 <!-- Github README -->
 
 <p align="center"><img src="https://img.shields.io/badge/I Am TANVIR %20BANGLADESHI- NOOB PROGRAMMER-green?colorA=%23ff0000&colorB=%23017e40&style=flat-square">
@@ -7,7 +7,7 @@
 </i></b></h3>
 <h3 align="center">
   <img src="https://emoji.discord.st/emojis/768b108d-274f-4f44-a634-8477b16efce7.gif" width="25">
-  &nbsp; ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ 𝗬𝗘𝗔𝗦𝗜𝗡 ʙᴏᴛ &nbsp;
+  &nbsp; ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ 𝗧𝗔𝗡𝗩𝗜𝗥 ʙᴏᴛ &nbsp;
   <img src="https://emoji.discord.st/emojis/768b108d-274f-4f44-a634-8477b16efce7.gif" width="25">
 </h3>
 <img align="center" alt="line" src="https://github.com/DalpatRathore/dalpatrathore/blob/main/assets/images/line-1.svg">
