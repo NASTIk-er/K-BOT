@@ -1,63 +1,60 @@
-const axios = require('axios');
-
-const baseApiUrl = async () => {
-  const base = await axios.get(
-    `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
-  );
-  return base.data.api;
-};
+const axios = require("axios");
 
 module.exports = {
   config: {
     name: "art",
-    version: "1.6.9",
-    author: "Nazrul",
-    role: 0,
-    description: "{pn} - Enhance your photos with artful transformations!",
-    category: "art",
+    aliases: [],
+    version: "1.0",
+    author: "Mostakim",
     countDown: 5,
-    guide: { 
-      en: "{pn} reply to an image"
+    role: 0,
+    shortDescription: {
+      en: "Get AI-generated art images"
+    },
+    longDescription: {
+      en: "Sends 1 to 5 AI-generated art images of a given keyword"
+    },
+    category: "fun",
+    guide: {
+      en: "+art <keyword> - <1 to 5>\nExample: +art cat - 3"
     }
   },
-  onStart: async function ({ message, event, args, api }) {
+
+  onStart: async function ({ api, event, args }) {
     try {
-      const cp = ["bal","zombie","anime","ghost", "watercolor", "sketch", "abstract", "cartoon","monster"];
-      const prompts = args[0] || cp[Math.floor(Math.random() * cp.length)];
+      const input = args.join(" ");
+      const [keywordRaw, countRaw] = input.split(" - ");
+      const keyword = keywordRaw?.trim();
+      const count = parseInt(countRaw?.trim());
 
-      const msg = await api.sendMessage("🎨 Processing your image, please wait...", event.threadID);
-
-      let photoUrl = "";
-
-      if (event.type === "message_reply" && event.messageReply?.attachments?.length > 0) {
-        photoUrl = event.messageReply.attachments[0].url;
-      } else if (args.length > 0) {
-        photoUrl = args.join(' ');
+      if (!keyword || isNaN(count) || count < 1 || count > 5) {
+        return api.sendMessage("❌ Format: +art <keyword> - <1 to 5>\nউদাহরণ: +art cat - 3", event.threadID, event.messageID);
       }
 
-      if (!photoUrl) {
-        return api.sendMessage("🔰 Please reply to an image or provide a URL!", event.threadID, event.messageID);
+      const res = await axios.get(`https://www.x-noobs-apis.42web.io/art?name=${encodeURIComponent(keyword)}`);
+      const images = res.data;
+
+      if (!Array.isArray(images) || images.length === 0) {
+        return api.sendMessage(`😿 কোনো ছবি পাওয়া যায়নি '${keyword}' এর জন্য।`, event.threadID, event.messageID);
       }
 
-      const response = await axios.get(`${await baseApiUrl()}/art2?url=${encodeURIComponent(photoUrl)}&prompt=${encodeURIComponent(prompts)}`);
-
-      if (!response.data || !response.data.imageUrl) {
-        await api.sendMessage("⚠ Failed to return a valid image URL. Please try again.", event.threadID, event.messageID);
-        return;
+      
+      const selected = [];
+      for (let i = 0; i < count; i++) {
+        const randomImg = images[Math.floor(Math.random() * images.length)];
+        selected.push(randomImg);
       }
 
-      const imageUrl = response.data.imageUrl;
-      await api.unsendMessage(msg.messageID);
+      const attachments = await Promise.all(selected.map(url => global.utils.getStreamFromURL(url)));
 
-      const imageStream = await axios.get(imageUrl, { responseType: 'stream' });
-
-      await api.sendMessage({ 
-        body: `Here's your artful image! 🎨`, 
-        attachment: imageStream.data 
+      api.sendMessage({
+        body: `🎨 '${keyword}' এর ${count}টি AI art:`,
+        attachment: attachments
       }, event.threadID, event.messageID);
 
-    } catch (error) {
-      await api.sendMessage(`Error: ${error.message}`, event.threadID, event.messageID);
+    } catch (e) {
+      console.error(e);
+      api.sendMessage("❌ আর্ট আনতে সমস্যা হয়েছে, পরে চেষ্টা করো।", event.threadID, event.messageID);
     }
   }
 };
